@@ -33,7 +33,7 @@ class Wiiicoin(Coin):
     )
 
     DESERIALIZER = DeserializerSegWit
-    RPC_PORT = 8688
+    RPC_PORT = 8868
     REORG_LIMIT = 800
 
     TX_COUNT = 1
@@ -42,6 +42,17 @@ class Wiiicoin(Coin):
 
     PEER_DEFAULT_PORTS = {"t": "50001", "s": "50002"}
     PEERS = []
+
+    @classmethod
+    def max_fetch_blocks(cls, height: int) -> int:
+        """Fetch one block at a time from the Wiiicoin daemon.
+
+        The Wiiicoin daemon can return batched ``getblock`` responses out of
+        request order. ElectrumX expects each returned batch to be ordered as
+        a contiguous chain, so single-block fetching prevents deterministic
+        prefetch resets while preserving the existing indexed database.
+        """
+        return 1
 
     @classmethod
     def header_hash_rev(cls, header: bytes) -> bytes:
