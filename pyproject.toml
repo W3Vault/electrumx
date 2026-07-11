@@ -34,8 +34,8 @@ classifiers = [
 dynamic = ['version']
 
 [project.urls]
-Homepage = "https://github.com/spesmilo/electrumx"
-Repository = "https://github.com/spesmilo/electrumx"
+Homepage = "https://github.com/W3Vault/electrumx"
+Repository = "https://github.com/W3Vault/electrumx"
 
 [project.scripts]
 electrumx_server = "electrumx.cli.electrumx_server:main"
@@ -51,6 +51,10 @@ leveldb = [
 ]
 rocksdb = [
     "rocksdb-ng",  # Felix's fork. ref https://github.com/f321x/python-rocksdb
+]
+# Wiiicoin's hybrid block header uses CryptoNight fast hashing.
+wiiicoin = [
+    "pycryptonight",
 ]
 # misc
 dev = [
