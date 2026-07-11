@@ -8,6 +8,8 @@ subclass of ``Coin`` and can be selected with ``COIN=Wiiicoin`` and
 ``NET=main``.
 """
 
+from Cryptodome.Hash import keccak
+
 from electrumx.lib.coins import Coin
 from electrumx.lib.tx import DeserializerSegWit
 
@@ -43,22 +45,18 @@ class Wiiicoin(Coin):
 
     @classmethod
     def header_hash_rev(cls, header: bytes) -> bytes:
-        """Return the Wiiicoin CryptoNight header hash.
+        """Return the Wiiicoin CryptoNight fast header hash.
 
-        Wiiicoin hashes the 76-byte CryptoNight blob beginning immediately
-        after the Bitcoin-style header and its one-byte blob-size field.
+        Wiiicoin applies Keccak-256 to the 76-byte CryptoNight blob beginning
+        immediately after the Bitcoin-style header and its one-byte blob-size
+        field.
         """
-        try:
-            import pycryptonight
-        except ImportError as exc:
-            raise RuntimeError(
-                "Wiiicoin support requires the optional 'pycryptonight' "
-                "package"
-            ) from exc
-
         if len(header) != cls.BASIC_HEADER_SIZE:
             raise ValueError(
                 f"Wiiicoin header must be {cls.BASIC_HEADER_SIZE} bytes, "
                 f"got {len(header)}"
             )
-        return pycryptonight.cn_fast_hash(header[81:])
+
+        hasher = keccak.new(digest_bits=256)
+        hasher.update(header[81:])
+        return hasher.digest()

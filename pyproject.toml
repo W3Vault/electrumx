@@ -52,9 +52,9 @@ leveldb = [
 rocksdb = [
     "rocksdb-ng",  # Felix's fork. ref https://github.com/f321x/python-rocksdb
 ]
-# Wiiicoin's hybrid block header uses CryptoNight fast hashing.
+# Wiiicoin's CryptoNight fast header hash is Keccak-256.
 wiiicoin = [
-    "pycryptonight",
+    "pycryptodomex>=3.8.1",
 ]
 # misc
 dev = [
