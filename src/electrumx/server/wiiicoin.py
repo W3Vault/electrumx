@@ -55,11 +55,28 @@ class WiiicoinBlockProcessor(BlockProcessor):
                     namespace_key_index_hashX(namespace_script)
                 )
 
-            hashxs = list(namespace_hashxs)
+            hashxs = sorted(namespace_hashxs)
             hashxs_by_tx.append(hashxs)
             self.touched_hashxs.update(hashxs)
 
         self.db.history.add_unflushed(hashxs_by_tx, tx_num_start)
+
+    def backup_txs(self, txs, is_unspendable) -> None:
+        # The base implementation removes all histories by transaction number,
+        # but the synthetic namespace hashXs must also be marked as touched so
+        # subscribed clients and the session history cache are invalidated.
+        for tx in txs:
+            for txout in tx.outputs:
+                namespace_script = parse_namespace_script(txout.pk_script)
+                if namespace_script is None:
+                    continue
+                self.touched_hashxs.add(
+                    namespace_index_hashX(namespace_script.namespace)
+                )
+                self.touched_hashxs.add(
+                    namespace_key_index_hashX(namespace_script)
+                )
+        super().backup_txs(txs, is_unspendable)
 
 
 class WiiicoinElectrumX(ElectrumX):
@@ -161,20 +178,27 @@ class WiiicoinElectrumX(ElectrumX):
     ) -> dict[str, Any]:
         hashx = scripthash_to_hashX(scripthash)
         try:
-            _start_tx_num = int(start_tx_num)
+            start_tx_num = int(start_tx_num)
         except (TypeError, ValueError):
             raise RPCError(
                 BAD_REQUEST,
                 f"{start_tx_num} should be an integer transaction number",
             ) from None
+        if start_tx_num < -1:
+            raise RPCError(
+                BAD_REQUEST,
+                f"{start_tx_num} should be -1 or a non-negative transaction number",
+            )
 
         history, cost = await self.session_mgr.limited_history(hashx)
-        self.bump_cost(cost)
+        self.bump_cost(cost + len(history) * 0.25)
 
         keyvalues: list[dict[str, Any]] = []
 
         # The legacy API is newest-first. Wiiiwallet currently passes -1 and
-        # consumes the returned key/value records directly.
+        # consumes the returned key/value records directly. Positive cursors
+        # remain accepted for wire compatibility; the current chain is small
+        # enough to return the complete bounded ElectrumX history.
         for txid_rev, height in reversed(history):
             txid_hum = hash_to_hex_str(txid_rev)
             tx = await self._read_transaction(txid_hum)
