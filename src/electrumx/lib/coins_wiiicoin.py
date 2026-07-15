@@ -12,6 +12,8 @@ from Cryptodome.Hash import keccak
 
 from electrumx.lib.coins import Coin
 from electrumx.lib.tx import DeserializerSegWit
+from electrumx.lib.wiiicoin_namespace import parse_namespace_script
+from electrumx.server.wiiicoin import WiiicoinBlockProcessor, WiiicoinElectrumX
 
 
 class Wiiicoin(Coin):
@@ -35,6 +37,8 @@ class Wiiicoin(Coin):
     )
 
     DESERIALIZER = DeserializerSegWit
+    SESSIONCLS = WiiicoinElectrumX
+    BLOCK_PROCESSOR = WiiicoinBlockProcessor
     RPC_PORT = 8868
     REORG_LIMIT = 800
 
@@ -44,6 +48,15 @@ class Wiiicoin(Coin):
 
     PEER_DEFAULT_PORTS = {"t": "50001", "s": "50002"}
     PEERS = []
+
+    @classmethod
+    def hashX_from_script(cls, script: bytes) -> bytes:
+        """Index namespace control outputs against their owner address script."""
+
+        namespace_script = parse_namespace_script(script)
+        if namespace_script is not None:
+            script = namespace_script.address_script
+        return super().hashX_from_script(script)
 
     @classmethod
     def max_fetch_blocks(cls, height: int) -> int:
