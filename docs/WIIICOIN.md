@@ -10,8 +10,8 @@ Install ElectrumX with a database backend and the Wiiicoin hashing extra:
 python -m pip install -e '.[leveldb,wiiicoin]'
 ```
 
-If the system already has a compatible `pycryptonight` module installed, the
-`wiiicoin` extra may be omitted.
+The `wiiicoin` extra installs `pycryptodomex`, which provides the Keccak-256
+header hashing used by this chain.
 
 ## Environment
 
@@ -20,7 +20,7 @@ Set the normal ElectrumX variables and select Wiiicoin with:
 ```bash
 export COIN=Wiiicoin
 export NET=main
-export DAEMON_URL=http://rpcuser:rpcpassword@127.0.0.1:8688/
+export DAEMON_URL=http://rpcuser:rpcpassword@127.0.0.1:8868/
 export DB_DIRECTORY=/var/lib/electrumx/wiiicoin
 export SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002
 export SSL_CERTFILE=/etc/electrumx/server.crt
@@ -72,7 +72,7 @@ The configured network values are:
 - Coin name: `Wiiicoin`
 - Network: `main`
 - Symbol: `WIII`
-- Daemon RPC port: `8688`
+- Daemon RPC port: `8868`
 - Electrum TCP port: `50001`
 - Electrum SSL port: `50002`
 - P2PKH prefix: `0x87`
