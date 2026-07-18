@@ -40,8 +40,8 @@ electrumx_server
 
 The Wiiicoin session exposes the namespace calls used by Wiiiwallet:
 
-- `blockchain.keva.get_transactions_info`
-- `blockchain.keva.get_keyvalues`
+- `blockchain.wiii.get_transactions_info`
+- `blockchain.wiii.get_keyvalues`
 - `blockchain.wiiicoin.get_transactions_info`
 - `blockchain.wiiicoin.get_keyvalues`
 - `blockchain.namespace.get_transactions_info`
@@ -60,7 +60,7 @@ A direct TCP capability check can be made with:
 ```bash
 printf '%s\n' \
   '{"id":1,"method":"server.version","params":["namespace-test","1.4"]}' \
-  '{"id":2,"method":"blockchain.keva.get_transactions_info","params":[[],true]}' \
+  '{"id":2,"method":"blockchain.wiii.get_transactions_info","params":[[],true]}' \
   | nc -w 5 127.0.0.1 50001
 ```
 
