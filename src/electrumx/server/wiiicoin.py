@@ -90,7 +90,7 @@ class WiiicoinElectrumX(ElectrumX):
             "get_keyvalues": self.phandle_namespace_get_keyvalues,
         }
         for prefix in (
-                "blockchain.keva",
+                "blockchain.wiii",
                 "blockchain.wiiicoin",
                 "blockchain.namespace",
         ):
