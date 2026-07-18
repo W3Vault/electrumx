@@ -20,7 +20,7 @@ OP_DROP = 0x75
 OP_RETURN = 0x6A
 
 NAMESPACE_PREFIX = 0x35
-ROOT_NAMESPACE_KEY = b"\x01_KEVA_NS_"
+ROOT_NAMESPACE_KEY = b"\x01_WIII_NS_"
 
 
 @dataclass(frozen=True, slots=True)
